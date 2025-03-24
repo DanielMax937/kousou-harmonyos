@@ -51,7 +51,14 @@ export default class RdbUtils {
         let recordList: MyTag[]= new Array<MyTag>();
         while (result.goToNextRow()) {
           const abc = result.getValue(1);
-          recordList.push( new MyTag(abc as string,result.getValue(2) as string,result.getValue(3) as string,result.getValue(4) as string))
+          const utcDateString = result.getValue(4) as string;
+          const utcDate = new Date(utcDateString);
+          const beijingTime = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
+          const options = {
+            hour12: false  // 使用 24 小时制
+          };// 输出 ISO 格式
+          const beijingTimeStr = beijingTime.toLocaleString('zh-CN', options).replace(/\//g, '-');
+          recordList.push( new MyTag(abc as string,result.getValue(2) as string,result.getValue(3) as string,beijingTimeStr))
         }
         resolve(recordList)
       }).catch((error)=> {
