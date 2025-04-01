@@ -1,4 +1,4 @@
-import RdbUtils from "../../../common/rdbUtils/RdbUtils";
+import RdbUtils from "../../common/rdbUtils/RdbUtils";
 import { INIT_TAG, Tag } from "./Money";
 import { Recent } from "./Recent";
 

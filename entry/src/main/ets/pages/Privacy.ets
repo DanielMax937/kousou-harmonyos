@@ -5,14 +5,14 @@ import { webview } from '@kit.ArkWeb';
 
 @Entry
 @Component
-struct Third {
+struct Privacy {
   @State message: string = 'Hi there'
   controller: webview.WebviewController = new webview.WebviewController();
 
   build() {
     Row() {
       Column() {
-        Web({ src: 'https://www.bitstripe.cn', controller: this.controller })
+        Web({ src: 'https://www.bitstripe.cn/privacy?from=hongmeng', controller: this.controller })
       }
       .width('100%')
     }

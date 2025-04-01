@@ -3,7 +3,7 @@ import { LayoutComponent } from './components/Layout'
 import { Money, Tag } from './components/Money';
 import { MyKeyboard } from './components/MyKeyboard';
 import { promptAction } from '@kit.ArkUI';
-import RdbUtils from '../../common/rdbUtils/RdbUtils';
+import RdbUtils from '../common/rdbUtils/RdbUtils';
 import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
