@@ -99,6 +99,9 @@ struct LauncherPage {
       Logger.error(CommonConstants.LAUNCHER_PAGE_TAG, 'Get the preferences Failed, err: ' + err);
     });
   }
+  aboutToAppear(){
+    webview.WebviewController.setWebDebuggingAccess(true)
+  }
 
   onPageShow() {
     this.context = getContext(this) as common.UIAbilityContext;
@@ -130,7 +133,7 @@ struct LauncherPage {
     Stack() {
       Row() {
         Column() {
-          Web({ src: 'https://www.bitstripe.cn?from=hongmeng', controller: this.controller })
+          Web({ src: 'https://www.bitstripe.cn?from=hongmeng', controller: this.controller }).domStorageAccess(true)
         }
       }
     }

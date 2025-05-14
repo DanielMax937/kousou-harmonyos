@@ -21,6 +21,25 @@
    1. AppScope > resources ：用于存放应用需要用到的资源文件（应用图标）。
    2. Module_name （Entry）> src > main > resources ：用于存放该Module需要用到的资源文件（应用运行的资源，一些jpg，svg，png图片等）
 
+### webview调试
+1. 需要hdc shell进入到连着的真机
+2. 需要通过 cat /proc/net/unix | grep devtools 找到对应的pid
+3. 需要在本地 hdc fport tcp:9222 localabstract:webview_devtools_remote_xxx 执行转发
+4. 然后在chrome中，选中network类型，配置localhost:9222，然后就能看到目标进行调试了
+5. 在上述之前，代码里要做相关改动
+```js
+aboutToAppear(){
+    // 开启调试
+    webview.WebviewController.setWebDebuggingAccess(true)
+  }
+```
+
+### webview
+1. 如果需要支持localstorage，需要在使用domStorageAccess设置为true
+```
+Web({ src: 'http://192.168.41.48:3001?from=hongmeng', controller: this.controller }).domStorageAccess(true)
+```
+
 
 ### 后台和上架管理
 1. TODO
@@ -32,3 +51,5 @@
 2. [基础概念](https://blog.csdn.net/m0_68038853/article/details/139246403)
 3. [资源分类和访问](https://blog.csdn.net/a6051529/article/details/137387476)
 4. [图标设置](https://developer.huawei.com/consumer/cn/forum/topic/0201165322333298054)
+5. [学习资料](https://www.cnblogs.com/shudaoshan/p/18224414)
+6. [webview调试](https://blog.csdn.net/Mayism123/article/details/139534057)
