@@ -41,6 +41,7 @@ Web({ src: 'http://192.168.41.48:3001?from=hongmeng', controller: this.controlle
 ```
 2. 使用postmessage和原生进行通信，不过报错，说 port can post message
 3. 使用jsBridge，这个可以具体看官方文档,走的通
+4. cookie持久化，可以通过preference来做，先通过jsbridge获取登录状态，然后获取cookie，然后存储，然后在打开时进行同步
 
 
 ### 后台和上架管理
