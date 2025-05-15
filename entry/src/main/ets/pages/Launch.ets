@@ -60,7 +60,7 @@ struct LauncherPage {
   ports: webview.WebMessagePort[] = [];
   selfPreference = this.getDataPreferences(this)
   @State jsBridge:  BitJsBridgeClass = new  BitJsBridgeClass(this.selfPreference);
-  private host: string = "http://192.168.41.48:3001"
+  private host: string = "https://www.bitstripe.cn"
   private context?: common.UIAbilityContext;
   private timerId: number = 0;
   private isJumpToAdvertising: boolean = false;
@@ -135,7 +135,6 @@ struct LauncherPage {
       preferences.get(CommonConstants.PREFERENCES_KEY_COOKIE, true).then((value: preferences.ValueType) => {
         Logger.info(CommonConstants.PREFERENCES_KEY_COOKIE, 'onPageShow value: ' + value);
         if (value) {
-          console.log("@@@", value)
           const cookieList = (value as string).split(";")
           for (let index = 0; index < cookieList.length; index++) {
             const element = cookieList[index];
