@@ -45,7 +45,7 @@ Web({ src: 'http://192.168.41.48:3001?from=hongmeng', controller: this.controlle
 
 
 ### 后台和上架管理
-1. TODO
+1. 用模拟器，会采用和上架中心一样的证书，所以ok。但是如果是用手机的证书，由于是自动生成，和应用中心不一致，导致profile失败
 
 
 ## 参考资源
