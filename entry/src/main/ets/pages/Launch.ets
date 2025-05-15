@@ -21,20 +21,50 @@ import CommonConstants from '../common/constants/CommonConstants';
 import CustomDialogComponent from '../view/CustomDialogComponent';
 import { GlobalContext } from '../common/utils/GlobalContext';
 import { webview } from '@kit.ArkWeb';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+class  BitJsBridgeClass {
+  private preferences: Promise<preferences.Preferences>;
+  constructor(preferences: Promise<preferences.Preferences>) {
+    this.preferences = preferences
+  }
+
+  login(url: string): string {
+    const cookie = webview.WebCookieManager.fetchCookieSync(url)
+    this.preferences.then((result: preferences.Preferences) => {
+      let privacyPut = result.put(CommonConstants.PREFERENCES_KEY_COOKIE, cookie);
+      result.flush();
+      privacyPut.then(() => {
+        Logger.info(CommonConstants.PREFERENCES_KEY_COOKIE, 'Put the value of cookie Successfully.');
+      }).catch((err: Error) => {
+        Logger.error(CommonConstants.PREFERENCES_KEY_COOKIE, 'Put the value of cookie Failed, err: ' + err);
+      });
+    }).catch((err: Error) => {
+      Logger.error(CommonConstants.PREFERENCES_KEY_COOKIE, 'Get the preferences Failed, err: ' + err);
+    });
+    return 'save cookie success';
+  }
+}
 
 /**
  * The LauncherPage is the entry point of the application and shows how to develop the LauncherPage.
  * Stay on the LauncherPage for a few seconds to jump to the AdvertisingPage.
  * Developers can replace the background image.
+ *
  */
 @Entry
 @Component
 struct LauncherPage {
-  controller: webview.WebviewController = new webview.WebviewController();
 
+  controller: webview.WebviewController = new webview.WebviewController();
+  ports: webview.WebMessagePort[] = [];
+  selfPreference = this.getDataPreferences(this)
+  @State jsBridge:  BitJsBridgeClass = new  BitJsBridgeClass(this.selfPreference);
+  private host: string = "http://192.168.41.48:3001"
   private context?: common.UIAbilityContext;
   private timerId: number = 0;
   private isJumpToAdvertising: boolean = false;
+  private webviewCookie: string = '';
   dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomDialogComponent(
       {
@@ -101,6 +131,22 @@ struct LauncherPage {
   }
   aboutToAppear(){
     webview.WebviewController.setWebDebuggingAccess(true)
+    this.getDataPreferences(this).then((preferences: preferences.Preferences) => {
+      preferences.get(CommonConstants.PREFERENCES_KEY_COOKIE, true).then((value: preferences.ValueType) => {
+        Logger.info(CommonConstants.PREFERENCES_KEY_COOKIE, 'onPageShow value: ' + value);
+        if (value) {
+          console.log("@@@", value)
+          const cookieList = (value as string).split(";")
+          for (let index = 0; index < cookieList.length; index++) {
+            const element = cookieList[index];
+            webview.WebCookieManager.configCookieSync(this.host, element)
+          }
+        } else {
+          Logger.info(CommonConstants.PREFERENCES_KEY_COOKIE, 'onPageShow no cookie find');
+        }
+      });
+    });
+
   }
 
   onPageShow() {
@@ -132,8 +178,48 @@ struct LauncherPage {
   build() {
     Stack() {
       Row() {
+
         Column() {
-          Web({ src: 'https://www.bitstripe.cn?from=hongmeng', controller: this.controller }).domStorageAccess(true)
+          Web({ src: this.host + '?from=hongmeng', controller: this.controller })
+            .javaScriptAccess(true)
+            .fileAccess(true)
+            .geolocationAccess(true)
+            .domStorageAccess(true)
+            .onlineImageAccess(true)
+            .javaScriptProxy({
+              object: this.jsBridge,
+              name: "bitJsBridge",
+              methodList: ["login"],
+              controller: this.controller
+            })
+            .onPageEnd(() => {
+              try {
+                // 1、创建两个消息端口。
+                this.ports = this.controller.createWebMessagePorts();
+
+                // 2、在应用侧的消息端口(如端口1)上注册回调事件。
+                this.ports[1].onMessageEvent((result: webview.WebMessage) => {
+                  let msg = 'Got msg from HTML:';
+                  if (typeof (result) === 'string') {
+                    Logger.info(`received string message from html5, string is: ${result}`);
+                    msg = msg + result;
+                  } else if (typeof (result) === 'object') {
+                    if (result instanceof ArrayBuffer) {
+                      Logger.info(`received arraybuffer from html5, length is: ${result.byteLength}`);
+                      msg = msg + 'length is ' + result.byteLength;
+                    } else {
+                      Logger.info('not support');
+                    }
+                  } else {
+                    Logger.info('not support');
+                  }
+                })
+                // 设置在onPageEnd, 确保页面已加载完成
+                this.controller.postMessage('__init_port__', [this.ports[0]], '*');
+              } catch (error) {
+                Logger.error(`ErrorCode: ${(error as BusinessError).code},  Message: ${(error as BusinessError).message}`);
+              }
+          })
         }
       }
     }

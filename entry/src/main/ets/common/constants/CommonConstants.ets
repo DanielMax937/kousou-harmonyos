@@ -183,4 +183,7 @@ export default class CommonConstants {
    * Common layout weight.
    */
   static readonly COMMON_LAYOUT_WEIGHT: number = 1;
+
+  static readonly PREFERENCES_KEY_COOKIE: string = 'WebviewCookie';
+
 }

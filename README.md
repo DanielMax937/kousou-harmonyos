@@ -39,6 +39,8 @@ aboutToAppear(){
 ```
 Web({ src: 'http://192.168.41.48:3001?from=hongmeng', controller: this.controller }).domStorageAccess(true)
 ```
+2. 使用postmessage和原生进行通信，不过报错，说 port can post message
+3. 使用jsBridge，这个可以具体看官方文档,走的通
 
 
 ### 后台和上架管理
@@ -53,3 +55,4 @@ Web({ src: 'http://192.168.41.48:3001?from=hongmeng', controller: this.controlle
 4. [图标设置](https://developer.huawei.com/consumer/cn/forum/topic/0201165322333298054)
 5. [学习资料](https://www.cnblogs.com/shudaoshan/p/18224414)
 6. [webview调试](https://blog.csdn.net/Mayism123/article/details/139534057)
+7. [webview和原生通信](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/web-in-page-app-function-invoking)
