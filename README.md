@@ -45,7 +45,8 @@ Web({ src: 'http://192.168.41.48:3001?from=hongmeng', controller: this.controlle
 
 
 ### 后台和上架管理
-1. 用模拟器，会采用和上架中心一样的证书，所以ok。但是如果是用手机的证书，由于是自动生成，和应用中心不一致，导致profile失败
+1. 打包时，用模拟器，会采用和上架中心一样的证书，所以ok。但是如果是用手机的证书，由于是自动生成，和应用中心不一致，导致profile失败
+2. 网站的备案不能用于app的，app备案需要包的信息，可以使用这里的方式 https://developer.huawei.com/consumer/cn/forum/topic/0207134216696042133
 
 
 ## 参考资源
