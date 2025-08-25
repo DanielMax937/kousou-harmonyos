@@ -52,6 +52,12 @@
       {
         "name": "ohos.permission.INTERNET"
       }
+    ],
+    "metadata": [
+      {
+        "name": "client_id",
+        "value": "6917559910242444654"
+      }
     ]
   }
 }
