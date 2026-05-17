@@ -30,23 +30,23 @@
     },
     {
       "name": "dialog_text_title",
-      "value": "Welcome To My App"
+      "value": "Service Agreement and Privacy Policy"
     },
     {
       "name": "dialog_text_privacy_content",
-      "value": "We fully respect users' privacy rights and provide appropriate security protection measures for your personal information in accordance with legal requirements and mature security standards in the industry."
+      "value": "Please read and fully understand the Service Agreement and Privacy Policy before continuing."
     },
     {
       "name": "dialog_text_privacy_statement",
-      "value": "Privacy Agreement Protection Statement"
+      "value": "Privacy Policy"
     },
     {
       "name": "dialog_text_terms_statement",
-      "value": "User Terms Agreement Statement"
+      "value": "Service Agreement"
     },
     {
       "name": "dialog_text_declaration_prompt",
-      "value": "(hereinafter referred to as \"this statement\") to help you understand how we collect, use, disclose, protect, store and transmit your personal data. Please read this statement carefully. If you have any questions, please let us know."
+      "value": "If you agree, tap Agree to continue."
     },
     {
       "name": "dialog_button_disagree",
@@ -67,6 +67,10 @@
     {
       "name": "privacy_back",
       "value": "Go Back"
+    },
+    {
+      "name": "server_sync_reason",
+      "value": "Save accounting records to the bitstripe server after Huawei account login and support multi-device restore."
     }
   ]
 }

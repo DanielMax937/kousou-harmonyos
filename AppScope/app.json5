@@ -1,9 +1,9 @@
 {
   "app": {
     "bundleName": "com.example.my_account",
-    "vendor": "example",
-    "versionCode": 1000001,
-    "versionName": "1.0.4",
+    "vendor": "kousou",
+    "versionCode": 1000004,
+    "versionName": "1.0.5",
     "icon": "$media:app_icon",
     "label": "$string:app_name"
   }

@@ -10,3 +10,15 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
+
+# Local environment and secrets.
+.env
+.env.*
+!.env.example
+
+# Signing materials contain private keys and local password material.
+/keystore/
+*.p12
+*.p7b
+*.cer
+*.csr

@@ -2,8 +2,7 @@
 struct ChildItem {
   @Prop title: string;
   @Prop colorStr: string;
-
-  changeTab?: (key: string) => void;
+  @Link currentMenu: string;
 
   getTitle = (name: string) => {
     if(name === 'home') {
@@ -32,9 +31,7 @@ struct ChildItem {
           .padding({top: 10})
       }
       .onClick(() => {
-          if(this.changeTab) {
-            this.changeTab(this.title)
-          }
+          this.currentMenu = this.title
       })
     }
     .width('100%')
@@ -48,9 +45,7 @@ struct ChildItem {
 export struct LayoutComponent {
   @State menus: Array<string> = ['home', 'money'];
 
-  @Prop currentMenu: string;
-
-  changeTab?: (key: string) => void;
+  @Link currentMenu: string;
 
 
   @Builder homeBuilder() {};
@@ -71,7 +66,7 @@ export struct LayoutComponent {
 
       Flex({ direction: FlexDirection.Row, justifyContent: FlexAlign.Center }) {
         ForEach(this.menus, (item: string) => {
-          ChildItem({ title: item, colorStr: item === this.currentMenu ? '#a3c6bf' : '#d7e0e2', changeTab: this.changeTab })
+          ChildItem({ title: item, colorStr: item === this.currentMenu ? '#a3c6bf' : '#d7e0e2', currentMenu: $currentMenu })
         }, (item: string) => item)
       }
       .height(68)

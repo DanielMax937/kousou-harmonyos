@@ -67,6 +67,10 @@
     {
       "name": "privacy_back",
       "value": "返回"
+    },
+    {
+      "name": "server_sync_reason",
+      "value": "用于在登录华为账号后，将记账数据保存到 bitstripe 服务端并支持多设备恢复。"
     }
   ]
 }

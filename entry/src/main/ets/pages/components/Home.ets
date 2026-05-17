@@ -1,4 +1,4 @@
-import RdbUtils from "../../common/rdbUtils/RdbUtils";
+import RdbUtils, { MyTag } from "../../common/rdbUtils/RdbUtils";
 import { INIT_TAG, Tag } from "./Money";
 import { Recent } from "./Recent";
 
@@ -31,6 +31,8 @@ interface MatchTag {icon: string, name: string}
 @Component
 export struct Home {
   @State showHistory: boolean = false;
+  @State expandedHistory: boolean = false;
+  @State visibleRecordCount: number = 12;
 
   @State todayIncome: number = 0;
   @State todayCost: number = 0;
@@ -38,7 +40,9 @@ export struct Home {
   @State recordList: FormatRecordList[] = [];
 
 
-  changeTab?: (key: string) => void;
+  @Watch('handleMenuChange') @Link currentMenu: string;
+  @Link userId: string;
+  @Watch('handleSyncChange') @Link syncRevision: number;
 
   aboutToAppear() {
     if(RdbUtils.getStore()) {
@@ -53,28 +57,58 @@ export struct Home {
     }
   }
 
+  handleMenuChange() {
+    if (this.currentMenu === 'home' && RdbUtils.getStore()) {
+      this.queryData();
+    }
+  }
+
+  handleSyncChange() {
+    if (this.currentMenu === 'home' && RdbUtils.getStore()) {
+      this.queryData();
+    }
+  }
+
+  currentLocalDateKeys(): string[] {
+    const offsets = [0, 8, 16];
+    const keys: string[] = [];
+    offsets.forEach((offset: number) => {
+      const key = new Date(Date.now() + offset * 60 * 60 * 1000).toISOString().slice(0, 10);
+      if (!keys.includes(key)) {
+        keys.push(key);
+      }
+    });
+    return keys;
+  }
+
 
   queryData = () => {
-    RdbUtils.queryAll('ACCOUNT').then((res)=> {
-      const current = new Date();
-      const timestamp = current.toISOString();
-      const match = timestamp.slice(0, 10);
+    const queryTasks: Promise<Array<MyTag>>[] = this.userId === 'local'
+      ? [RdbUtils.queryAll('ACCOUNT', this.userId)]
+      : [RdbUtils.queryAll('ACCOUNT', this.userId), RdbUtils.queryAll('ACCOUNT', 'local')];
+    Promise.all(queryTasks).then((queryResults)=> {
+      const res = queryResults.reduce((all, item) => all.concat(item), []);
+      const todayKeys = this.currentLocalDateKeys();
 
       const homeRecordList: MyRecord[] = [];
       res.forEach((item)=> {
         console.log('RdbInfo', item.toString())
         const target = INIT_TAG.find((tag)=>tag.name === item.tag )
+        if (!target) {
+          console.warn(`[RdbInfo] skip unknown tag ${item.tag}`);
+          return;
+        }
         homeRecordList.push({
           createAt: item.createAt,
           amount: item.amount,
           category: item.type,
           note: "",
-          tagId: target!.id
+          tagId: target.id
         })
       })
 
       const todayRecordList = homeRecordList.reduce((arr, item) => {
-        if(item.createAt.includes(match)){
+        if(todayKeys.some((key: string) => item.createAt.includes(key))){
           arr.push(item)
         }
         return arr
@@ -135,6 +169,8 @@ export struct Home {
         formatList.push({date: key, list: formatObj[key]})
       })
       this.recordList = formatList;
+    }).catch((error: Error) => {
+      console.error(`[RdbInfo] query home data failed: ${error.message}`);
     })
   }
 
@@ -148,12 +184,42 @@ export struct Home {
   }
 
   calcHeight = () => {
-    if(this.showHistory) {
+    if(this.showHistory && !this.expandedHistory) {
       // 如果高度足够放下原来的，则不会抖动，否则，会拉长整个页面，然后页面变长，位置会重新计算，会抖动
       return '60%';
+    } else if (this.expandedHistory) {
+      return '28%';
     } else {
       return '100%';
     }
+  }
+
+  sortedRecordList(): FormatRecordList[] {
+    return this.recordList.slice().sort((a: FormatRecordList, b: FormatRecordList) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+
+  totalRecordCount(): number {
+    return this.recordList.reduce((total: number, item: FormatRecordList) => total + item.list.length, 0);
+  }
+
+  visibleRecordList(): FormatRecordList[] {
+    let remain = this.expandedHistory ? this.visibleRecordCount : 8;
+    const result: FormatRecordList[] = [];
+    this.sortedRecordList().forEach((day: FormatRecordList) => {
+      if (remain <= 0) {
+        return;
+      }
+      const list = day.list.slice(0, remain);
+      if (list.length > 0) {
+        result.push({ date: day.date, list });
+        remain -= list.length;
+      }
+    });
+    return result;
+  }
+
+  loadMoreRecords() {
+    this.visibleRecordCount += 12;
   }
   build() {
     Scroll(){
@@ -183,9 +249,7 @@ export struct Home {
             .fontColor('#333')
             .fontSize(14)
             .onClick(()=> {
-              if(this.changeTab) {
-                this.changeTab('money')
-              }
+              this.currentMenu = 'money'
             })
 
           Row() {
@@ -206,6 +270,10 @@ export struct Home {
           }
           .onClick(() => {
             this.showHistory = !this.showHistory;
+            if (!this.showHistory) {
+              this.expandedHistory = false;
+              this.visibleRecordCount = 12;
+            }
             // this.queryData();
           })
         }
@@ -214,21 +282,60 @@ export struct Home {
         .height(this.calcHeight())
 
         if(this.showHistory) {
+          Row() {
+            Text(this.expandedHistory ? '最近账单' : '最近账单预览')
+              .fontSize(16)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#111')
+            Text(this.expandedHistory ? '收起' : '展开全部')
+              .fontSize(14)
+              .fontColor('#2f7468')
+              .onClick(() => {
+                this.expandedHistory = !this.expandedHistory;
+                this.visibleRecordCount = this.expandedHistory ? 24 : 12;
+              })
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .width('100%')
+          .padding({ left: 20, right: 20, bottom: 8 })
           Scroll() {
             Column(){
-              ForEach(this.recordList.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()), (item: FormatRecordList, _) => {
+              ForEach(this.visibleRecordList(), (item: FormatRecordList, _) => {
                 Recent({
                   item: item
                 })
-              }, (item: string) => item)
+              }, (item: FormatRecordList) => item.date)
+              if (this.expandedHistory && this.visibleRecordCount < this.totalRecordCount()) {
+                Text('加载更多')
+                  .fontSize(14)
+                  .textAlign(TextAlign.Center)
+                  .fontColor('#1f2f2b')
+                  .width('100%')
+                  .padding({ top: 10, bottom: 10 })
+                  .backgroundColor('#edf0ec')
+                  .border({ radius: 8 })
+                  .margin({ top: 10 })
+                  .onClick(() => {
+                    this.loadMoreRecords();
+                  })
+              }
+              if (this.expandedHistory && this.totalRecordCount() > 0 && this.visibleRecordCount >= this.totalRecordCount()) {
+                Text('没有更多了')
+                  .fontSize(12)
+                  .fontColor('#8d9996')
+                  .width('100%')
+                  .textAlign(TextAlign.Center)
+                  .padding({ top: 10, bottom: 4 })
+              }
             }
             .justifyContent(FlexAlign.Start)
-            .padding({bottom: 10})
+            .padding({left: 20, right: 20, bottom: 10})
           }
-          .height(250)
+          .height(this.expandedHistory ? 520 : 250)
         }
       }
     }
     .width('100%')
+    .height('100%')
   }
 }

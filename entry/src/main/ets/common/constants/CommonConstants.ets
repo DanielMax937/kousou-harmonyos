@@ -186,4 +186,14 @@ export default class CommonConstants {
 
   static readonly PREFERENCES_KEY_COOKIE: string = 'WebviewCookie';
 
+  static readonly PREFERENCES_KEY_DEVICE_ID: string = 'DeviceId';
+
+  static readonly BITSTRIPE_KOUSOU_DEFAULT_HOST: string = 'https://www.bitstripe.cn';
+
+  static readonly BITSTRIPE_KOUSOU_API_BASE_PATH: string = '/v1/kousou';
+
+  static readonly BITSTRIPE_KOUSOU_API_BASE_URL: string = `${CommonConstants.BITSTRIPE_KOUSOU_DEFAULT_HOST}${CommonConstants.BITSTRIPE_KOUSOU_API_BASE_PATH}`;
+
+  static readonly RECEIPT_LLM_API_URL: string = `${CommonConstants.BITSTRIPE_KOUSOU_API_BASE_URL}/receipt/recognize`;
+
 }
