@@ -1,0 +1,69 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "release",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "keystore/release.cer",
+          "storePassword": "REPLACE_WITH_LOCAL_STORE_PASSWORD",
+          "keyAlias": "REPLACE_WITH_LOCAL_KEY_ALIAS",
+          "keyPassword": "REPLACE_WITH_LOCAL_KEY_PASSWORD",
+          "profile": "keystore/release.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "keystore/release.p12"
+        }
+      },
+      {
+        "name": "debug",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "keystore/debug.cer",
+          "storePassword": "REPLACE_WITH_LOCAL_STORE_PASSWORD",
+          "keyAlias": "REPLACE_WITH_LOCAL_KEY_ALIAS",
+          "keyPassword": "REPLACE_WITH_LOCAL_KEY_PASSWORD",
+          "profile": "keystore/debug.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "keystore/debug.p12"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "release",
+        "compatibleSdkVersion": "5.0.1(13)",
+        "targetSdkVersion": "5.0.1(13)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
