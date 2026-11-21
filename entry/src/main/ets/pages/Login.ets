@@ -266,6 +266,66 @@ struct Login {
     });
   }
 
+  confirmDeleteAccount() {
+    if (!this.appToken || this.userId === 'local' || this.loading) {
+      return;
+    }
+    AlertDialog.show({
+      title: '确认注销账号',
+      message: '注销后将永久删除您在云端保存的所有账单、自定义分类、心愿目标与分析记录，且无法恢复。确认继续吗？',
+      autoCancel: true,
+      alignment: DialogAlignment.Center,
+      primaryButton: {
+        value: '取消',
+        action: () => {}
+      },
+      secondaryButton: {
+        value: '确认注销',
+        fontColor: '#c93b3b',
+        action: () => {
+          this.deleteAccount();
+        }
+      }
+    });
+  }
+
+  async deleteAccount() {
+    if (!this.appToken || this.userId === 'local' || this.loading) {
+      return;
+    }
+    this.loading = true;
+    const context = getContext(this) as common.UIAbilityContext;
+    const deletingUserId = this.userId;
+    try {
+      await BitstripeApiService.deleteAccount(this.appToken);
+      await RdbUtils.clearUserRecords(deletingUserId).catch(() => {});
+      await RdbUtils.clearKousouAuth(context);
+      this.accountLabel = '未登录';
+      this.userId = 'local';
+      this.huaweiAccountId = '';
+      this.huaweiOpenId = '';
+      this.huaweiNickName = '';
+      this.huaweiAvatarUri = '';
+      this.huaweiEmail = '';
+      this.appToken = '';
+      this.displayName = '';
+      this.tokenExpiresAt = 0;
+      this.isGate = true;
+      this.showToast('账号已注销', '#a6f499');
+      router.replaceUrl({
+        url: CommonConstants.LOGIN_PAGE_URL,
+        params: CommonConstants.loginGateParams()
+      }).catch((error: BusinessError) => {
+        console.error(`[Login] redirect after deleteAccount failed, code=${error.code}, message=${error.message}`);
+      });
+    } catch (error) {
+      const err = error as BusinessError;
+      this.showToast(`注销失败 ${err.message ?? ''}`, '#ffcac8');
+    } finally {
+      this.loading = false;
+    }
+  }
+
   shortAccountId(value: string): string {
     if (!value) {
       return '';

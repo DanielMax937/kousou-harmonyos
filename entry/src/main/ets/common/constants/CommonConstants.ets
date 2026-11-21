@@ -190,9 +190,9 @@ export default class CommonConstants {
 
   static readonly TERMS_PAGE_URL: string = 'pages/Terms';
 
-  static readonly PRIVACY_DOCUMENT_URL: string = 'https://free-accounting.vercel.app/en/privacy?from=hongmeng';
+  static readonly PRIVACY_DOCUMENT_URL: string = 'https://www.bitstripe.cn/files/kousou/legal/privacy-policy.html';
 
-  static readonly TERMS_DOCUMENT_URL: string = 'https://free-accounting.vercel.app/en/terms?from=hongmeng';
+  static readonly TERMS_DOCUMENT_URL: string = 'https://www.bitstripe.cn/files/kousou/legal/user-agreement.html';
 
   static readonly LOGIN_PAGE_URL: string = 'pages/Login';
 
@@ -223,6 +223,8 @@ export default class CommonConstants {
   static readonly PREFERENCES_KEY_COOKIE: string = 'WebviewCookie';
 
   static readonly PREFERENCES_KEY_DEVICE_ID: string = 'DeviceId';
+
+  static readonly APP_VERSION_NAME: string = '1.0.6';
 
   static readonly BITSTRIPE_KOUSOU_DEFAULT_HOST: string = 'https://www.bitstripe.cn';
 

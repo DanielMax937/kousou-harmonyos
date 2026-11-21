@@ -160,6 +160,14 @@ export default class RdbUtils {
     };
   }
 
+  static async clearUserRecords(userId: string): Promise<void> {
+    const safeUserId = (userId || '').replace(/'/g, "''");
+    if (!safeUserId) {
+      return;
+    }
+    await RdbUtils.executeSql(`DELETE FROM ${RdbUtils.ACCOUNT_TABLE} WHERE USER_ID = '${safeUserId}'`);
+  }
+
   static async clearKousouAuth(context: common.Context): Promise<void> {
     const store = await preferences.getPreferences(context, RdbUtils.PREFERENCES_FILE_NAME);
     await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_USER_ID);

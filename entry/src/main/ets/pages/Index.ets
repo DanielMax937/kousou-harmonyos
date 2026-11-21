@@ -284,7 +284,7 @@ struct Index {
         const normalized: ReceiptRecognitionItem = {
           description: item.description ?? result.text,
           amount: `${item.amount}`,
-          type: item.type === 'income' ? 'income' : 'expense',
+          type: item.type === 'income' ? 'income' : 'cost',
           category: item.category || result.tag || '日用品',
           date: item.date,
           selected: true

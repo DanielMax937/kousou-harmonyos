@@ -29,6 +29,12 @@ export interface ServerAccountRecord {
 
 interface HuaweiAuthPayload {
   authorizationCode: string;
+  idToken?: string;
+}
+
+interface DeleteAccountResult {
+  deleted: boolean;
+  userId: string;
 }
 
 interface ServerRecordPayload {
@@ -274,10 +280,15 @@ export class BitstripeApiService {
 
   static async authHuawei(session: HuaweiAccountSession): Promise<BitstripeAuthResult> {
     const payload: HuaweiAuthPayload = {
-      authorizationCode: session.authorizationCode
+      authorizationCode: session.authorizationCode,
+      idToken: session.idToken || undefined
     };
     const envelope = await BitstripeApiService.post<BitstripeAuthResult>('/auth/huawei', payload);
     return envelope;
+  }
+
+  static async deleteAccount(token: string): Promise<DeleteAccountResult> {
+    return BitstripeApiService.delete<DeleteAccountResult>('/profile', token);
   }
 
   static async createRecord(token: string, record: AccountRecordInput): Promise<ServerAccountRecord> {
@@ -524,7 +535,7 @@ export class BitstripeApiService {
         header,
         extraData: payload ? JSON.stringify(payload) : undefined,
         connectTimeout: 10000,
-        readTimeout: 30000
+        readTimeout: 60000
       });
       const rawResult = response.result as string;
       const envelope = JSON.parse(rawResult) as ApiEnvelope<T>;

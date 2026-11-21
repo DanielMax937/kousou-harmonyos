@@ -149,7 +149,7 @@ export struct Settings {
           Text('版本号')
             .fontSize(16)
             .fontColor('#111')
-          Text('1.0.5')
+          Text(CommonConstants.APP_VERSION_NAME)
             .fontSize(14)
             .fontColor('#66736f')
         }
