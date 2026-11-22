@@ -33,7 +33,7 @@
         "name": "default",
         "signingConfig": "release",
         "compatibleSdkVersion": "5.0.1(13)",
-        "targetSdkVersion": "5.0.1(13)",
+        "targetSdkVersion": "26.0.0",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {

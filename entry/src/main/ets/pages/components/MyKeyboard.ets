@@ -210,19 +210,23 @@ export struct MyKeyboard {
           if(text === '') {
             console.log("do nothing")
           } else if(text === '完成') {
-            // TODO
-            // 1. 存到localstorage
-            // 2. message提醒
-            // this.dialogController.open()
-            const finalAmount = this.totalValue;
+            // If expression is pending evaluation (displayed as '='), evaluate first instead of submitting raw '+/-' string
+            if (this.totalValue !== '' && !/^-?\d+\.?\d*$/.test(this.totalValue)) {
+              const evaluated = this.updateOutput('完成', this.totalValue);
+              const parsedNum = Number(evaluated);
+              this.totalValue = Number.isFinite(parsedNum) ? Number(parsedNum.toFixed(2)).toString() : '0';
+              return;
+            }
+            const parsedAmountNum = Number(this.totalValue || '0');
             if(!this.selectedTag) {
               this.showToast('请先选择标签', '#ffcac8')
               return;
             }
-            if(Number(finalAmount || '0') <= 0) {
-              this.showToast('请输入金额', '#ffcac8')
+            if(!Number.isFinite(parsedAmountNum) || parsedAmountNum <= 0) {
+              this.showToast('请输入有效金额', '#ffcac8')
               return;
             }
+            const finalAmount = Number(parsedAmountNum.toFixed(2)).toString();
             if(RdbUtils.getStore()) {
               const now = RdbUtils.nowIsoString();
               const record: AccountRecordInput = {
