@@ -28,6 +28,7 @@ export interface StoredKousouAuth {
   huaweiEmail?: string;
   token: string;
   expiresAt: number;
+  displayName?: string;
   accountLabel: string;
   lastSyncAt: string;
 }
@@ -71,6 +72,7 @@ export default class RdbUtils {
   private static readonly PREFERENCES_KEY_KOUSOU_TOKEN: string = 'KousouToken';
   private static readonly PREFERENCES_KEY_KOUSOU_TOKEN_EXPIRES_AT: string = 'KousouTokenExpiresAt';
   private static readonly PREFERENCES_KEY_KOUSOU_ACCOUNT_LABEL: string = 'KousouAccountLabel';
+  private static readonly PREFERENCES_KEY_KOUSOU_DISPLAY_NAME: string = 'KousouDisplayName';
   private static readonly PREFERENCES_KEY_KOUSOU_HUAWEI_ACCOUNT_ID: string = 'KousouHuaweiAccountId';
   private static readonly PREFERENCES_KEY_KOUSOU_HUAWEI_OPEN_ID: string = 'KousouHuaweiOpenId';
   private static readonly PREFERENCES_KEY_KOUSOU_HUAWEI_NICK_NAME: string = 'KousouHuaweiNickName';
@@ -118,6 +120,7 @@ export default class RdbUtils {
     await store.put(RdbUtils.PREFERENCES_KEY_KOUSOU_TOKEN, auth.token);
     await store.put(RdbUtils.PREFERENCES_KEY_KOUSOU_TOKEN_EXPIRES_AT, auth.expiresAt);
     await store.put(RdbUtils.PREFERENCES_KEY_KOUSOU_ACCOUNT_LABEL, auth.accountLabel);
+    await store.put(RdbUtils.PREFERENCES_KEY_KOUSOU_DISPLAY_NAME, auth.displayName ?? '');
     await store.put(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_ACCOUNT_ID, auth.huaweiAccountId ?? '');
     await store.put(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_OPEN_ID, auth.huaweiOpenId ?? '');
     await store.put(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_NICK_NAME, auth.huaweiNickName ?? '');
@@ -133,6 +136,7 @@ export default class RdbUtils {
     const token = await store.get(RdbUtils.PREFERENCES_KEY_KOUSOU_TOKEN, '');
     const expiresAt = await store.get(RdbUtils.PREFERENCES_KEY_KOUSOU_TOKEN_EXPIRES_AT, 0);
     const accountLabel = await store.get(RdbUtils.PREFERENCES_KEY_KOUSOU_ACCOUNT_LABEL, '');
+    const displayName = await store.get(RdbUtils.PREFERENCES_KEY_KOUSOU_DISPLAY_NAME, '');
     const huaweiAccountId = await store.get(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_ACCOUNT_ID, '');
     const huaweiOpenId = await store.get(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_OPEN_ID, '');
     const huaweiNickName = await store.get(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_NICK_NAME, '');
@@ -155,6 +159,7 @@ export default class RdbUtils {
       huaweiEmail: typeof huaweiEmail === 'string' ? huaweiEmail : '',
       token,
       expiresAt: expiresAtNumber,
+      displayName: typeof displayName === 'string' ? displayName : '',
       accountLabel: typeof accountLabel === 'string' && accountLabel ? accountLabel : `已登录 ${userId}`,
       lastSyncAt: typeof lastSyncAt === 'string' ? lastSyncAt : ''
     };
@@ -174,6 +179,7 @@ export default class RdbUtils {
     await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_TOKEN);
     await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_TOKEN_EXPIRES_AT);
     await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_ACCOUNT_LABEL);
+    await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_DISPLAY_NAME);
     await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_ACCOUNT_ID);
     await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_OPEN_ID);
     await store.delete(RdbUtils.PREFERENCES_KEY_KOUSOU_HUAWEI_NICK_NAME);

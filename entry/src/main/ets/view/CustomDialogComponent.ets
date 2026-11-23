@@ -41,16 +41,17 @@ export default struct CustomDialogComponent {
         })
       Text($r('app.string.dialog_text_privacy_content'))
         .fontSize($r('app.float.dialog_common_text_size'))
+        .fontColor('#222222')
         .width(CommonConstants.DIALOG_COMPONENT_WIDTH_PERCENT)
       Row() {
         Text("您可点击阅读")
           .fontSize($r('app.float.dialog_common_text_size'))
+          .fontColor('#222222')
         Text($r('app.string.dialog_text_privacy_statement'))
           .fontColor($r('app.color.dialog_text_statement_color'))
           .fontSize($r('app.float.dialog_common_text_size'))
           .onClick(() => {
             this.controller.close();
-            GlobalContext.getContext().setObject('isJumpPrivacy', true);
             router.pushUrl({
               url: CommonConstants.PRIVACY_PAGE_URL
             }).catch((error: Error) => {
@@ -59,12 +60,12 @@ export default struct CustomDialogComponent {
           })
         Text("和")
           .fontSize($r('app.float.dialog_common_text_size'))
+          .fontColor('#222222')
         Text($r('app.string.dialog_text_terms_statement'))
           .fontColor($r('app.color.dialog_text_statement_color'))
           .fontSize($r('app.float.dialog_common_text_size'))
           .onClick(() => {
             this.controller.close();
-            GlobalContext.getContext().setObject('isJumpPrivacy', true);
             router.pushUrl({
               url: CommonConstants.TERMS_PAGE_URL
             }).catch((error: Error) => {

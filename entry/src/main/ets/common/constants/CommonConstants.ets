@@ -224,7 +224,7 @@ export default class CommonConstants {
 
   static readonly PREFERENCES_KEY_DEVICE_ID: string = 'DeviceId';
 
-  static readonly APP_VERSION_NAME: string = '1.0.7';
+  static readonly APP_VERSION_NAME: string = '1.0.8';
 
   static readonly BITSTRIPE_KOUSOU_DEFAULT_HOST: string = 'https://www.bitstripe.cn';
 

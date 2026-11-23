@@ -171,6 +171,8 @@ export struct Settings {
             TextInput({ placeholder: CommonConstants.BITSTRIPE_KOUSOU_DEFAULT_HOST, text: this.draftHost })
               .height(42)
               .fontSize(14)
+              .fontColor('#111')
+              .placeholderColor('#7d8985')
               .backgroundColor('#fff')
               .border({ radius: 8 })
               .margin({ top: 10 })

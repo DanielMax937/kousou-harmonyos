@@ -378,6 +378,8 @@ struct CategoryManage {
               TextInput({ placeholder: '分类名称', text: this.customTagName })
                 .height(42)
                 .fontSize(14)
+                .fontColor('#111')
+                .placeholderColor('#7d8985')
                 .width('100%')
                 .backgroundColor('#fff')
                 .border({ radius: 8 })

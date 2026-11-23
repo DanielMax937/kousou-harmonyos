@@ -202,6 +202,7 @@ export struct MyKeyboard {
             .border({width: 2, color: '#000', style: BorderStyle.Solid, radius: 8})
             .margin({top: 8})
             .fontSize(24)
+            .fontColor('#111')
             .backgroundColor(this.getTextBg(index))
             .textAlign(this.getTextAlign(index))
             .padding({ right: this.getTextPadding(index) })

@@ -138,6 +138,8 @@ struct Index {
       TextInput({ placeholder: '备注，例如：和朋友午餐、客户报销', text: this.noteText })
         .height(42)
         .fontSize(14)
+        .fontColor('#111')
+        .placeholderColor('#7d8985')
         .backgroundColor('#f2f5f0')
         .border({ radius: 8 })
         .margin({ left: 18, right: 18, top: 4, bottom: 4 })

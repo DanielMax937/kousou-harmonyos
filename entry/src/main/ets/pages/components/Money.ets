@@ -188,6 +188,7 @@ export struct Money {
             .padding({top: 3, bottom: 3, left: 8, right: 8})
             .border({radius: 4})
             .backgroundColor(this.getSelectedColor('income'))
+            .fontColor('#1f2f2b')
             .fontSize(14)
             .onClick(()=> {
               this.selectMoneyType('income')
@@ -196,6 +197,7 @@ export struct Money {
             .padding({top: 3, bottom: 3, left: 8, right: 8})
             .border({radius: 4})
             .backgroundColor(this.getSelectedColor('cost'))
+            .fontColor('#1f2f2b')
             .fontSize(14)
             .onClick(()=> {
               this.selectMoneyType('cost')
@@ -216,6 +218,7 @@ export struct Money {
               .fontColor('#2f7468')
             Text('新增分类')
               .fontSize(14)
+              .fontColor('#1f2f2b')
           }
           .justifyContent(FlexAlign.Center)
           .width('calc(20% - 8px)')
@@ -233,6 +236,7 @@ export struct Money {
                   .height(40)
                 Text(this.getCurrentTypeTag()[parseInt(item)].name)
                   .fontSize(14)
+                  .fontColor('#1f2f2b')
               }
                 .justifyContent(FlexAlign.Center)
                 .width('calc(20% - 8px)')
@@ -258,5 +262,6 @@ export struct Money {
     }
     .width('100%')
     .height('100%')
+    .backgroundColor('#f9faf5')
   }
 }

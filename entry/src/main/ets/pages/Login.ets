@@ -40,6 +40,7 @@ struct Login {
   @State serverHost: string = CommonConstants.BITSTRIPE_KOUSOU_DEFAULT_HOST;
   @State tokenExpiresAt: number = 0;
   @State loading: boolean = false;
+  @State privacyAgreed: boolean = false;
 
   aboutToAppear() {
     const params = router.getParams() as LoginRouteParams;
@@ -56,6 +57,7 @@ struct Login {
   }
 
   onPrivacyConfirm() {
+    this.privacyAgreed = true;
     this.savePrivacyAgreement(() => {
       this.proceedAfterPrivacy();
     });
@@ -84,12 +86,12 @@ struct Login {
     const store = await preferences.getPreferences(getContext(this), CommonConstants.PREFERENCES_FILE_NAME);
     const value = await store.get(CommonConstants.PREFERENCES_KEY_PRIVACY, true);
     if (value) {
-      const isJumpPrivacy: boolean = (GlobalContext.getContext().getObject('isJumpPrivacy') as boolean) ?? false;
-      if (!isJumpPrivacy) {
-        this.dialogController.open();
-      }
+      this.privacyAgreed = false;
+      GlobalContext.getContext().setObject('isJumpPrivacy', false);
+      this.dialogController.open();
       return false;
     }
+    this.privacyAgreed = true;
     GlobalContext.getContext().setObject('isJumpPrivacy', false);
     return true;
   }
@@ -127,9 +129,33 @@ struct Login {
       this.huaweiAvatarUri = savedAuth.huaweiAvatarUri ?? '';
       this.huaweiEmail = savedAuth.huaweiEmail ?? '';
       this.appToken = savedAuth.token;
+      this.displayName = (savedAuth.displayName ?? '').trim();
       this.accountLabel = this.huaweiAccountLabel();
-      this.displayName = savedAuth.accountLabel.startsWith('已登录 ') ? savedAuth.accountLabel.replace('已登录 ', '') : '';
       this.tokenExpiresAt = savedAuth.expiresAt;
+      if (this.appToken && this.userId !== 'local') {
+        BitstripeApiService.getProfile(this.appToken).then((profile) => {
+          const remoteName = (profile.displayName || '').trim();
+          if (remoteName) {
+            this.displayName = remoteName;
+            this.accountLabel = this.huaweiAccountLabel();
+            RdbUtils.getKousouLastSyncAt(context).then((lastSyncAt: string) => {
+              return RdbUtils.saveKousouAuth(context, {
+                userId: this.userId,
+                huaweiAccountId: this.huaweiAccountId,
+                huaweiOpenId: this.huaweiOpenId,
+                huaweiNickName: this.huaweiNickName,
+                huaweiAvatarUri: this.huaweiAvatarUri,
+                huaweiEmail: this.huaweiEmail,
+                token: this.appToken,
+                expiresAt: this.tokenExpiresAt,
+                displayName: this.displayName,
+                accountLabel: this.accountLabel,
+                lastSyncAt
+              });
+            }).catch(() => {});
+          }
+        }).catch(() => {});
+      }
       return;
     }
     this.userId = 'local';
@@ -159,6 +185,10 @@ struct Login {
   }
 
   async loginWithHuawei() {
+    const agreed = await this.ensurePrivacyAgreement();
+    if (!agreed) {
+      return;
+    }
     if (this.loading) {
       return;
     }
@@ -204,6 +234,7 @@ struct Login {
       huaweiEmail: this.huaweiEmail,
       token: this.appToken,
       expiresAt: authResult.expiresAt,
+      displayName: this.displayName,
       accountLabel: this.accountLabel,
       lastSyncAt
     });
@@ -215,9 +246,11 @@ struct Login {
       this.showToast('请先登录华为账号', '#ffcac8');
       return;
     }
+    const trimmedName = (this.displayName || '').trim();
     BitstripeApiService.updateProfile(this.appToken, {
-      displayName: this.displayName
+      displayName: trimmedName
     }).then((profile) => {
+      this.displayName = (profile.displayName || trimmedName).trim();
       this.accountLabel = this.huaweiAccountLabel();
       const context = getContext(this) as common.UIAbilityContext;
       RdbUtils.getKousouLastSyncAt(context).then((lastSyncAt: string) => {
@@ -230,6 +263,7 @@ struct Login {
           huaweiEmail: this.huaweiEmail,
           token: this.appToken,
           expiresAt: this.tokenExpiresAt,
+          displayName: this.displayName,
           accountLabel: this.accountLabel,
           lastSyncAt
         });
@@ -341,6 +375,9 @@ struct Login {
   }
 
   huaweiAccountLabel(): string {
+    if (this.displayName && this.displayName.trim()) {
+      return this.displayName.trim();
+    }
     if (this.huaweiNickName) {
       return this.huaweiNickName;
     }
@@ -418,6 +455,8 @@ struct Login {
             TextInput({ placeholder: '用于应用内展示', text: this.displayName })
               .height(44)
               .fontSize(14)
+              .fontColor('#111')
+              .placeholderColor('#7d8985')
               .backgroundColor('#fff')
               .border({ radius: 8 })
               .onChange((value: string) => {
